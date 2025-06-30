@@ -83,6 +83,26 @@ export default function Layout({ children }) {
           },
         },
       },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            backgroundColor: 'transparent !important',
+          },
+          input: {
+            backgroundColor: 'transparent !important',
+          }
+        }
+      },
+      MuiInputBase: {
+        styleOverrides: {
+          root: {
+            backgroundColor: 'transparent !important',
+          },
+          input: {
+            backgroundColor: 'transparent !important',
+          }
+        }
+      }
     },
   });
 

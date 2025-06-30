@@ -1,17 +1,22 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
-import { Paper, Typography, Box, Grid, Divider, TextField } from '@mui/material';
+import { useForm, Controller } from 'react-hook-form';
+import { Paper, Typography, Box, Grid, Divider, TextField, useTheme } from '@mui/material';
 import SubmitButton from '../common/SubmitButton';
 import PersonAddAlt1RoundedIcon from '@mui/icons-material/PersonAddAlt1Rounded';
 import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
+import { MuiTelInput, matchIsValidTel } from 'mui-tel-input';
 
 export default function UserForm({ onSubmit, editingUser, showError }) {
+  const theme = useTheme();
   const {
     control,
     handleSubmit,
     formState: { errors },
     reset,
-    trigger
+    trigger,
+    register,
+    setValue,
+    watch
   } = useForm({
     defaultValues: {
       firstName: '',
@@ -43,6 +48,8 @@ export default function UserForm({ onSubmit, editingUser, showError }) {
     });
   }, [editingUser]);
 
+  const phoneValue = watch('phone');
+
   return (
     <Paper
       elevation={4}
@@ -56,7 +63,8 @@ export default function UserForm({ onSubmit, editingUser, showError }) {
         flexDirection: 'column',
         alignItems: 'stretch',
         maxWidth: 450,
-        mx: 'auto'
+        mx: 'auto',
+        width: '100%'
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -70,14 +78,18 @@ export default function UserForm({ onSubmit, editingUser, showError }) {
         </Typography>
       </Box>
       <Divider sx={{ mb: 2 }} />
-      <Box component="form" onSubmit={handleSubmit(onSubmitWithValidation)}>
-        <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={12} sm={6}>
+      <Box
+        component="form"
+        onSubmit={handleSubmit(onSubmitWithValidation)}
+        sx={{ width: '100%' }}
+      >
+        <Grid container spacing={2} sx={{ mb: 2, width: '100%' }}>
+          <Grid item xs={12} sm={6} sx={{ width: '100%' }}>
             <TextField
               label="First Name"
               fullWidth
-              margin="normal"
-              {...control.register('firstName', {
+              margin="none"
+              {...register('firstName', {
                 required: 'First name is required',
                 pattern: {
                   value: /^[a-zA-ZÀ-ÿ-' ]+$/,
@@ -90,14 +102,17 @@ export default function UserForm({ onSubmit, editingUser, showError }) {
               })}
               error={!!errors.firstName}
               helperText={errors.firstName?.message}
+              sx={{
+                width: '100%'
+              }}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={6} sx={{ width: '100%' }}>
             <TextField
               label="Last Name"
               fullWidth
-              margin="normal"
-              {...control.register('lastName', {
+              margin="none"
+              {...register('lastName', {
                 required: 'Last name is required',
                 pattern: {
                   value: /^[a-zA-ZÀ-ÿ-' ]+$/,
@@ -110,17 +125,20 @@ export default function UserForm({ onSubmit, editingUser, showError }) {
               })}
               error={!!errors.lastName}
               helperText={errors.lastName?.message}
+              sx={{
+                width: '100%'
+              }}
             />
           </Grid>
         </Grid>
-        <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={12}>
+        <Grid container spacing={2} sx={{ mb: 2, width: '100%' }}>
+          <Grid item xs={12} sx={{ width: '100%' }}>
             <TextField
               label="Email"
               type="email"
               fullWidth
-              margin="normal"
-              {...control.register('email', {
+              margin="none"
+              {...register('email', {
                 required: 'Email is required',
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -129,30 +147,55 @@ export default function UserForm({ onSubmit, editingUser, showError }) {
               })}
               error={!!errors.email}
               helperText={errors.email?.message}
+              sx={{
+                width: '100%'
+              }}
             />
           </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Phone"
-              fullWidth
-              margin="normal"
-              {...control.register('phone', {
-                required: 'Phone is required',
-                pattern: {
-                  value: /^[0-9]{10,15}$/,
-                  message: '10-15 digits required'
-                }
-              })}
-              error={!!errors.phone}
-              helperText={errors.phone?.message}
+          <Grid item xs={12} sx={{ width: '100%' }}>
+            <Controller
+              name="phone"
+              control={control}
+              rules={{
+                required: 'Phone number is required',
+                validate: value =>
+                  (value && matchIsValidTel(value)) || 'Enter a valid phone number'
+              }}
+              render={({ field }) => (
+                <MuiTelInput
+                  {...field}
+                  value={field.value || ''}
+                  onChange={value => field.onChange(value)}
+                  defaultCountry="US"
+                  fullWidth
+                  margin="none"
+                  label="Phone"
+                  error={!!errors.phone}
+                  helperText={errors.phone?.message}
+                  sx={{
+                    width: '100%'
+                  }}
+                  inputProps={{
+                    name: 'phone',
+                    required: true,
+                    autoFocus: false,
+                    style: {
+                      fontFamily: '"Roboto","Helvetica","Arial",sans-serif'
+                    }
+                  }}
+                  FormHelperTextProps={{
+                    sx: { ml: 0 }
+                  }}
+                />
+              )}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sx={{ width: '100%' }}>
             <TextField
               label="Location"
               fullWidth
-              margin="normal"
-              {...control.register('location', {
+              margin="none"
+              {...register('location', {
                 required: 'Location is required',
                 pattern: {
                   value: /^[a-zA-ZÀ-ÿ-' ]+$/,
@@ -165,14 +208,17 @@ export default function UserForm({ onSubmit, editingUser, showError }) {
               })}
               error={!!errors.location}
               helperText={errors.location?.message}
+              sx={{
+                width: '100%'
+              }}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sx={{ width: '100%' }}>
             <TextField
               label="Hobby"
               fullWidth
-              margin="normal"
-              {...control.register('hobby', {
+              margin="none"
+              {...register('hobby', {
                 required: 'Hobby is required',
                 minLength: {
                   value: 2,
@@ -181,6 +227,9 @@ export default function UserForm({ onSubmit, editingUser, showError }) {
               })}
               error={!!errors.hobby}
               helperText={errors.hobby?.message}
+              sx={{
+                width: '100%'
+              }}
             />
           </Grid>
         </Grid>

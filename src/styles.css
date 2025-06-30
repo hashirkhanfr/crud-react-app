@@ -16,7 +16,6 @@ button, .MuiButton-root {
 }
 
 .MuiContainer-root {
-  /* Remove background so the body gradient shows through */
   transition: background 0.3s;
 }
 
@@ -32,4 +31,108 @@ button, .MuiButton-root {
     padding-left: 4px !important;
     padding-right: 4px !important;
   }
+}
+
+.MuiTextField-root,
+.MuiTelInput-root {
+  width: 100% !important;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  background: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.MuiInputBase-root,
+.MuiOutlinedInput-root,
+.MuiTelInput-root .MuiInputBase-root {
+  width: 100% !important;
+  height: 56px;
+  font-size: 1rem;
+  border-radius: 8px !important;
+  background: #fff !important;
+  box-sizing: border-box;
+  box-shadow: none !important;
+  transition: background 0.2s;
+}
+
+/* --- THE FIX: force dark background for all input states in dark mode --- */
+[data-mui-color-scheme="dark"] .MuiInputBase-root,
+[data-mui-color-scheme="dark"] .MuiOutlinedInput-root,
+[data-mui-color-scheme="dark"] .MuiTelInput-root .MuiInputBase-root,
+[data-mui-color-scheme="dark"] .MuiTextField-root .MuiInputBase-root,
+[data-mui-color-scheme="dark"] .MuiTelInput-root .MuiOutlinedInput-root,
+[data-mui-color-scheme="dark"] .MuiInputBase-root input,
+[data-mui-color-scheme="dark"] .MuiOutlinedInput-root input,
+[data-mui-color-scheme="dark"] .MuiTextField-root input,
+[data-mui-color-scheme="dark"] .MuiTelInput-root input {
+  background: #181c24 !important;
+  color: #f8f9fa !important;
+  /* Ensure border and box-shadow are not visible in dark mode */
+  box-shadow: none !important;
+  border-color: #263043 !important;
+}
+
+/* Remove autofill background in dark mode */
+[data-mui-color-scheme="dark"] input:-webkit-autofill,
+[data-mui-color-scheme="dark"] input:-webkit-autofill:focus,
+[data-mui-color-scheme="dark"] input:-webkit-autofill:hover,
+[data-mui-color-scheme="dark"] input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #181c24 inset !important;
+  box-shadow: 0 0 0 1000px #181c24 inset !important;
+  -webkit-text-fill-color: #f8f9fa !important;
+  caret-color: #f8f9fa !important;
+}
+
+.MuiOutlinedInput-root.Mui-focused,
+.MuiTelInput-root .MuiOutlinedInput-root.Mui-focused {
+  background: rgba(0,188,212,0.08) !important;
+}
+
+[data-mui-color-scheme="dark"] .MuiOutlinedInput-root.Mui-focused,
+[data-mui-color-scheme="dark"] .MuiTelInput-root .MuiOutlinedInput-root.Mui-focused {
+  background: rgba(0,188,212,0.14) !important;
+}
+
+.MuiOutlinedInput-root fieldset,
+.MuiTelInput-root .MuiOutlinedInput-root fieldset {
+  border-color: var(--mui-text-secondary, rgba(0,0,0,0.23)) !important;
+  transition: border-color 0.2s;
+}
+
+.MuiOutlinedInput-root.Mui-focused fieldset,
+.MuiTelInput-root .MuiOutlinedInput-root.Mui-focused fieldset {
+  border-color: var(--mui-primary-main, #00bcd4) !important;
+}
+
+.MuiOutlinedInput-root.Mui-error fieldset,
+.MuiTelInput-root .MuiOutlinedInput-root.Mui-error fieldset {
+  border-color: var(--mui-error-main, #d32f2f) !important;
+}
+
+.MuiInputLabel-root {
+  color: var(--mui-text-secondary, rgba(0,0,0,0.6));
+  font-size: 1rem;
+}
+
+.MuiInputLabel-root.Mui-focused {
+  color: var(--mui-primary-main, #00bcd4);
+}
+
+.MuiInputLabel-root.Mui-error {
+  color: var(--mui-error-main, #d32f2f);
+}
+
+.MuiFormHelperText-root {
+  color: var(--mui-text-secondary, rgba(0,0,0,0.6));
+  margin-left: 0;
+}
+
+.MuiFormHelperText-root.Mui-error {
+  color: var(--mui-error-main, #d32f2f);
+}
+
+.MuiGrid-item {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
