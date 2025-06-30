@@ -1,0 +1,35 @@
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(120deg, rgba(0,188,212,0.12) 0%, rgba(124,77,255,0.10) 100%);
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+button, .MuiButton-root {
+  transition: all 0.3s cubic-bezier(.4,0,.2,1) !important;
+}
+
+.MuiContainer-root {
+  /* Remove background so the body gradient shows through */
+  transition: background 0.3s;
+}
+
+@media (max-width: 900px) {
+  .MuiContainer-root {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .MuiContainer-root {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+  }
+}
