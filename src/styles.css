@@ -56,7 +56,7 @@ button, .MuiButton-root {
   transition: background 0.2s;
 }
 
-/* --- THE FIX: force dark background for all input states in dark mode --- */
+
 [data-mui-color-scheme="dark"] .MuiInputBase-root,
 [data-mui-color-scheme="dark"] .MuiOutlinedInput-root,
 [data-mui-color-scheme="dark"] .MuiTelInput-root .MuiInputBase-root,
@@ -68,12 +68,11 @@ button, .MuiButton-root {
 [data-mui-color-scheme="dark"] .MuiTelInput-root input {
   background: #181c24 !important;
   color: #f8f9fa !important;
-  /* Ensure border and box-shadow are not visible in dark mode */
+
   box-shadow: none !important;
   border-color: #263043 !important;
 }
 
-/* Remove autofill background in dark mode */
 [data-mui-color-scheme="dark"] input:-webkit-autofill,
 [data-mui-color-scheme="dark"] input:-webkit-autofill:focus,
 [data-mui-color-scheme="dark"] input:-webkit-autofill:hover,
