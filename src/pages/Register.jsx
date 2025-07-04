@@ -1,8 +1,11 @@
 import React from 'react';
 import { Box, Typography, Paper, TextField, Button, Divider, Stack } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
+import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
+  const navigate = useNavigate();
+
   return (
     <Box sx={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Paper
@@ -20,80 +23,22 @@ export default function Register() {
           alignItems: 'center'
         }}
       >
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: 'secondary.main' }}>
-          Register
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Create a new account to get started.
-        </Typography>
-        <Stack spacing={2} sx={{ width: '100%' }}>
-          <TextField
-            label="First Name"
-            fullWidth
-            sx={{ width: '100%' }}
-          />
-          <TextField
-            label="Last Name"
-            fullWidth
-            sx={{ width: '100%' }}
-          />
-          <TextField
-            label="Email"
-            type="email"
-            fullWidth
-            autoComplete="email"
-            sx={{ width: '100%' }}
-          />
-          <TextField
-            label="Password"
-            type="password"
-            fullWidth
-            autoComplete="new-password"
-            sx={{ width: '100%' }}
-          />
-          <Button
-            type="submit"
-            variant="contained"
-            color="secondary"
-            fullWidth
-            size="large"
-            sx={{
-              mt: 1,
-              py: 1.5,
-              fontWeight: 600,
-              letterSpacing: 1,
-              '&:hover': {
-                transform: 'translateY(-2px)',
-                boxShadow: 4
-              }
-            }}
-          >
-            Register
-          </Button>
-          <Divider sx={{ my: 2 }}>or</Divider>
-          <Button
-            variant="outlined"
-            color="secondary"
-            fullWidth
-            startIcon={<GoogleIcon />}
-            sx={{
-              fontWeight: 600,
-              letterSpacing: 1,
-              bgcolor: 'background.paper',
-              '&:hover': {
-                bgcolor: 'secondary.light',
-                color: 'primary.contrastText'
-              }
-            }}
-          >
-            Register with Google
-          </Button>
-        </Stack>
+        {/* ... existing code ... */}
         <Typography variant="body2" sx={{ mt: 3 }}>
           Already have an account?{' '}
-          <a href="#/login" style={{ color: '#00bcd4', textDecoration: 'none', fontWeight: 500 }}>
+          <Button 
+            onClick={() => navigate('/login')} 
+            sx={{ 
+              color: '#00bcd4', 
+              textDecoration: 'none', 
+              fontWeight: 500,
+              textTransform: 'none',
+              p: 0,
+              minWidth: 0
+            }}
+          >
             Login
-          </a>
+          </Button>
         </Typography>
       </Paper>
     </Box>
