@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Container, Grid, useMediaQuery, Typography } from '@mui/material';
+import { Container, Grid, useMediaQuery } from '@mui/material';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import UserForm from './components/UserForm/UserForm';
 import UserTable from './components/UserTable/UserTable';
 import Layout from './components/Layout/Layout';
 import Notification from './components/common/Notification';
 import { useTheme } from '@mui/material/styles';
-import { AppBar, Toolbar, Button, Box } from '@mui/material';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -52,17 +51,6 @@ function App() {
 
   return (
     <>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            User Management
-          </Typography>
-          <Button color="inherit" onClick={() => navigate('/')}>Dashboard</Button>
-          <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
-          <Button color="inherit" onClick={() => navigate('/register')}>Register</Button>
-        </Toolbar>
-      </AppBar>
-      
       <Layout>
         <Routes>
           <Route
