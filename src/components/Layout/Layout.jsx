@@ -4,7 +4,7 @@ import Footer from './Footer';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 
-export default function Layout({ children }) {
+export default function Layout({ children, user, onLogout }) {
   const [darkMode, setDarkMode] = React.useState(true);
 
   const theme = createTheme({
@@ -114,7 +114,7 @@ export default function Layout({ children }) {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+        <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} user={user} onLogout={onLogout} />
         <main style={{ flex: 1 }}>{children}</main>
         <Footer />
       </div>

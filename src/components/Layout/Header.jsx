@@ -3,11 +3,12 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import PeopleAltRoundedIcon from '@mui/icons-material/PeopleAltRounded';
 import MenuIcon from '@mui/icons-material/Menu';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate, useLocation } from 'react-router-dom';
 import React from 'react';
 import { useTheme, useMediaQuery } from '@mui/material';
 
-export default function Header({ darkMode, toggleDarkMode }) {
+export default function Header({ darkMode, toggleDarkMode, user, onLogout }) {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
@@ -17,23 +18,37 @@ export default function Header({ darkMode, toggleDarkMode }) {
   const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
 
-  const navItems = [
-    {
-      label: 'Dashboard',
-      path: '/',
-      color: 'primary',
-    },
-    {
-      label: 'Login',
-      path: '/login',
-      color: 'secondary',
-    },
-    {
-      label: 'Register',
-      path: '/register',
-      color: 'secondary',
-    },
-  ];
+  const navItems =
+    !user
+      ? [
+          {
+            label: 'Login',
+            path: '/login',
+            color: 'secondary',
+          },
+          {
+            label: 'Register',
+            path: '/register',
+            color: 'secondary',
+          },
+        ]
+      : [
+          {
+            label: 'Dashboard',
+            path: '/',
+            color: 'primary',
+          },
+        ];
+
+  const hideNav =
+    (!user && location.pathname !== '/login' && location.pathname !== '/register')
+      ? false
+      : (user
+          ? false
+          : !(location.pathname === '/login' || location.pathname === '/register'));
+
+  const showLoginRegister =
+    !user && (location.pathname === '/login' || location.pathname === '/register');
 
   return (
     <AppBar
@@ -68,8 +83,32 @@ export default function Header({ darkMode, toggleDarkMode }) {
           User Management
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {/* Desktop Buttons */}
-          {!isMobile && navItems.map((item) => (
+          {showLoginRegister &&
+            navItems.map((item) => (
+              <Button
+                key={item.label}
+                variant={location.pathname === item.path ? 'contained' : 'outlined'}
+                color={item.color}
+                onClick={() => navigate(item.path)}
+                sx={{
+                  fontWeight: 600,
+                  borderRadius: 2,
+                  px: 2,
+                  boxShadow: 'none',
+                  textTransform: 'none',
+                  bgcolor: location.pathname === item.path ? `${item.color}.main` : 'transparent',
+                  color: location.pathname === item.path ? `${item.color}.contrastText` : `${item.color}.main`,
+                  '&:hover': {
+                    bgcolor: `${item.color}.dark`,
+                    color: `${item.color}.contrastText`,
+                    boxShadow: 2,
+                  },
+                }}
+              >
+                {item.label}
+              </Button>
+            ))}
+          {!showLoginRegister && !hideNav && !isMobile && navItems.map((item) => (
             <Button
               key={item.label}
               variant={location.pathname === item.path ? 'contained' : 'outlined'}
@@ -93,9 +132,7 @@ export default function Header({ darkMode, toggleDarkMode }) {
               {item.label}
             </Button>
           ))}
-
-          
-          {isMobile && (
+          {isMobile && !showLoginRegister && navItems.length > 0 && (
             <>
               <IconButton
                 color="primary"
@@ -126,6 +163,29 @@ export default function Header({ darkMode, toggleDarkMode }) {
                 ))}
               </Menu>
             </>
+          )}
+          {user && (
+            <Button
+              color="error"
+              variant="outlined"
+              startIcon={<LogoutIcon />}
+              onClick={onLogout}
+              sx={{
+                ml: 2,
+                fontWeight: 600,
+                borderRadius: 2,
+                textTransform: 'none',
+                borderColor: 'error.main',
+                color: 'error.main',
+                '&:hover': {
+                  bgcolor: 'error.main',
+                  color: 'error.contrastText',
+                  boxShadow: 2,
+                },
+              }}
+            >
+              Logout
+            </Button>
           )}
           <IconButton
             onClick={toggleDarkMode}
