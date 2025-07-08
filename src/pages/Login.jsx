@@ -6,6 +6,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../config/firebase';
+import { useForm } from 'react-hook-form';
 
 const getCustomError = (code) => {
   switch (code) {
@@ -25,14 +26,16 @@ const getCustomError = (code) => {
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [form, setForm] = useState({ email: '', password: '' });
-  const [showPassword, setShowPassword] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [fieldError, setFieldError] = useState({});
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', code: '' });
-  const [successSnackbar, setSuccessSnackbar] = useState(
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
+  const [snackbar, setSnackbar] = React.useState({ open: false, message: '', code: '' });
+  const [successSnackbar, setSuccessSnackbar] = React.useState(
     location.state && location.state.registered ? true : false
   );
+
+  const { register, handleSubmit, setError, formState: { errors }, reset, clearErrors } = useForm({
+    defaultValues: { email: '', password: '' }
+  });
 
   React.useEffect(() => {
     if (location.state && location.state.registered) {
@@ -40,48 +43,32 @@ export default function Login() {
     }
   }, []);
 
-  const validate = () => {
-    const errors = {};
-    if (!form.email) errors.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = 'Please enter a valid email address.';
-    if (!form.password) errors.password = 'Password is required';
-    return errors;
-  };
-
   const showSnackbar = (message, code) => {
     setSnackbar({ open: true, message, code });
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setFieldError({});
-    const errors = validate();
-    if (Object.keys(errors).length > 0) {
-      if (errors.email) showSnackbar(errors.email, 'ERR_INVALID_EMAIL');
-      else if (errors.password) showSnackbar(errors.password, 'ERR_INVALID_PASSWORD');
-      setFieldError(errors);
-      return;
-    }
+  const onSubmit = async (data) => {
     setSubmitting(true);
+    clearErrors();
     try {
-      await signInWithEmailAndPassword(auth, form.email, form.password);
+      await signInWithEmailAndPassword(auth, data.email, data.password);
       navigate('/');
     } catch (err) {
       const code = err.code || '';
-      let errors = {};
       let custom = getCustomError(code);
-      if (code.includes('email') || code.includes('user')) errors.email = custom.message;
-      else if (code.includes('password')) errors.password = custom.message;
-      else errors.general = custom.message;
-      setFieldError(errors);
-      showSnackbar(custom.message, custom.code);
+      if (code.includes('email') || code.includes('user')) setError('email', { message: custom.message });
+      else if (code.includes('password')) setError('password', { message: custom.message });
+      else setError('email', { message: custom.message });
+      if (!code.includes('email') && !code.includes('user') && !code.includes('password')) {
+        showSnackbar(custom.message, custom.code);
+      }
     }
     setSubmitting(false);
   };
 
   const handleGoogleLogin = async () => {
     setSubmitting(true);
-    setFieldError({});
+    clearErrors();
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
@@ -114,39 +101,45 @@ export default function Login() {
         <Typography variant="h5" sx={{ fontWeight: 700, mb: 2, color: 'text.primary' }}>
           Login
         </Typography>
-        <Stack component="form" spacing={2} sx={{ width: '100%' }} onSubmit={handleLogin}>
+        <Stack
+          component="form"
+          spacing={2}
+          sx={{ width: '100%' }}
+          onSubmit={handleSubmit(onSubmit)}
+          autoComplete="off"
+        >
           <TextField
             label="Email"
-            type="email"
-            required
+            type="text"
             fullWidth
-            value={form.email}
-            onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
             autoComplete="email"
-            error={!!fieldError.email}
-            helperText={fieldError.email}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: fieldError.email ? 'error.main' : undefined,
-                }
+            {...register('email', {
+              required: 'Email is required',
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: 'Invalid email address'
               }
+            })}
+            error={!!errors.email}
+            helperText={errors.email?.message}
+            sx={{
+              width: '100%'
             }}
           />
           <TextField
             label="Password"
             type={showPassword ? 'text' : 'password'}
-            required
             fullWidth
-            value={form.password}
-            onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
             autoComplete="current-password"
-            error={!!fieldError.password}
-            helperText={fieldError.password}
+            {...register('password', {
+              required: 'Password is required'
+            })}
+            error={!!errors.password}
+            helperText={errors.password?.message}
             sx={{
               '& .MuiOutlinedInput-root': {
                 '& fieldset': {
-                  borderColor: fieldError.password ? 'error.main' : undefined,
+                  borderColor: errors.password ? 'error.main' : undefined,
                 }
               }
             }}

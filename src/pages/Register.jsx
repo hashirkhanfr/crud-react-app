@@ -6,6 +6,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from 'firebase/auth';
 import { auth } from '../config/firebase';
+import { useForm } from 'react-hook-form';
 
 const getCustomError = (code) => {
   switch (code) {
@@ -24,64 +25,42 @@ const getCustomError = (code) => {
 
 export default function Register() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [fieldError, setFieldError] = useState({});
   const [snackbar, setSnackbar] = useState({ open: false, message: '', code: '' });
 
-  const validate = () => {
-    const errors = {};
-    if (!form.name.trim()) errors.name = 'Name is required';
-    else if (!/^[a-zA-ZÀ-ÿ-' ]+$/.test(form.name.trim())) errors.name = 'Name can only contain letters and hyphens.';
-    if (!form.email) errors.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = 'Please enter a valid email address.';
-    if (!form.password) errors.password = 'Password is required';
-    else if (form.password.length < 6) errors.password = 'Password should be at least 6 characters.';
-    if (!form.confirm) errors.confirm = 'Please confirm your password';
-    else if (form.password !== form.confirm) errors.confirm = 'Passwords do not match';
-    return errors;
-  };
+  const { register, handleSubmit, setError, formState: { errors }, watch, clearErrors } = useForm({
+    defaultValues: { name: '', email: '', password: '', confirm: '' }
+  });
 
   const showSnackbar = (message, code) => {
     setSnackbar({ open: true, message, code });
   };
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    setFieldError({});
-    const errors = validate();
-    if (Object.keys(errors).length > 0) {
-      if (errors.name) showSnackbar(errors.name, 'ERR_INVALID_NAME');
-      else if (errors.email) showSnackbar(errors.email, 'ERR_INVALID_EMAIL');
-      else if (errors.password) showSnackbar(errors.password, 'ERR_INVALID_PASSWORD');
-      else if (errors.confirm) showSnackbar(errors.confirm, 'ERR_PASSWORD_MISMATCH');
-      setFieldError(errors);
-      return;
-    }
+  const onSubmit = async (data) => {
+    clearErrors();
     setSubmitting(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, form.email, form.password);
-      await updateProfile(userCredential.user, { displayName: form.name });
-      // Navigate to login page after successful registration
+      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      await updateProfile(userCredential.user, { displayName: data.name });
       navigate('/login', { state: { registered: true } });
     } catch (err) {
       const code = err.code || '';
-      let errors = {};
       let custom = getCustomError(code);
-      if (code.includes('email')) errors.email = custom.message;
-      else if (code.includes('password')) errors.password = custom.message;
-      else errors.general = custom.message;
-      setFieldError(errors);
-      showSnackbar(custom.message, custom.code);
+      if (code.includes('email')) setError('email', { message: custom.message });
+      else if (code.includes('password')) setError('password', { message: custom.message });
+      else setError('name', { message: custom.message });
+      if (!code.includes('email') && !code.includes('password') && !code.includes('name')) {
+        showSnackbar(custom.message, custom.code);
+      }
     }
     setSubmitting(false);
   };
 
   const handleGoogleRegister = async () => {
     setSubmitting(true);
-    setFieldError({});
+    clearErrors();
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
@@ -114,56 +93,70 @@ export default function Register() {
         <Typography variant="h5" sx={{ fontWeight: 700, mb: 2, color: 'text.primary' }}>
           Register
         </Typography>
-        <Stack component="form" spacing={2} sx={{ width: '100%' }} onSubmit={handleRegister}>
+        <Stack
+          component="form"
+          spacing={2}
+          sx={{ width: '100%' }}
+          onSubmit={handleSubmit(onSubmit)}
+          autoComplete="off"
+        >
           <TextField
             label="Full Name"
-            required
             fullWidth
-            value={form.name}
-            onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
             autoComplete="name"
-            error={!!fieldError.name}
-            helperText={fieldError.name}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: fieldError.name ? 'error.main' : undefined,
-                }
+            {...register('name', {
+              required: 'Name is required',
+              pattern: {
+                value: /^[a-zA-ZÀ-ÿ-' ]+$/,
+                message: 'Name can only contain letters and hyphens.'
+              },
+              minLength: {
+                value: 2,
+                message: 'Minimum 2 characters'
               }
+            })}
+            error={!!errors.name}
+            helperText={errors.name?.message}
+            sx={{
+              width: '100%'
             }}
           />
           <TextField
             label="Email"
-            type="email"
-            required
+            type="text"
             fullWidth
-            value={form.email}
-            onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
             autoComplete="email"
-            error={!!fieldError.email}
-            helperText={fieldError.email}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: fieldError.email ? 'error.main' : undefined,
-                }
+            {...register('email', {
+              required: 'Email is required',
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: 'Invalid email address'
               }
+            })}
+            error={!!errors.email}
+            helperText={errors.email?.message}
+            sx={{
+              width: '100%'
             }}
           />
           <TextField
             label="Password"
             type={showPassword ? 'text' : 'password'}
-            required
             fullWidth
-            value={form.password}
-            onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
             autoComplete="new-password"
-            error={!!fieldError.password}
-            helperText={fieldError.password}
+            {...register('password', {
+              required: 'Password is required',
+              minLength: {
+                value: 6,
+                message: 'Password should be at least 6 characters.'
+              }
+            })}
+            error={!!errors.password}
+            helperText={errors.password?.message}
             sx={{
               '& .MuiOutlinedInput-root': {
                 '& fieldset': {
-                  borderColor: fieldError.password ? 'error.main' : undefined,
+                  borderColor: errors.password ? 'error.main' : undefined,
                 }
               }
             }}
@@ -184,17 +177,19 @@ export default function Register() {
           <TextField
             label="Confirm Password"
             type={showConfirm ? 'text' : 'password'}
-            required
             fullWidth
-            value={form.confirm}
-            onChange={e => setForm(f => ({ ...f, confirm: e.target.value }))}
             autoComplete="new-password"
-            error={!!fieldError.confirm}
-            helperText={fieldError.confirm}
+            {...register('confirm', {
+              required: 'Please confirm your password',
+              validate: value =>
+                value === watch('password') || 'Passwords do not match'
+            })}
+            error={!!errors.confirm}
+            helperText={errors.confirm?.message}
             sx={{
               '& .MuiOutlinedInput-root': {
                 '& fieldset': {
-                  borderColor: fieldError.confirm ? 'error.main' : undefined,
+                  borderColor: errors.confirm ? 'error.main' : undefined,
                 }
               }
             }}
