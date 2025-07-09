@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, useMediaQuery, Alert, Snackbar } from '@mui/material';
+import { Container, Grid, useMediaQuery, Alert, Snackbar, Box } from '@mui/material';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import UserForm from './components/UserForm/UserForm';
 import UserTable from './components/UserTable/UserTable';
@@ -61,13 +61,11 @@ function App() {
     showNotification('User deleted successfully!');
   };
 
-  // Logout handler
   const handleLogout = async () => {
     await signOut(auth);
     navigate('/login');
   };
 
-  // Protected Route wrapper
   function PrivateRoute({ children }) {
     if (!user) {
       setShowAuthAlert(true);
@@ -98,7 +96,15 @@ function App() {
                     px: { xs: 0, sm: 0 },
                     overflowX: 'hidden',
                   }}
-                >
+                >                  
+                  {user && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                      <div style={{ marginBottom: 24, fontSize: 22, fontWeight: 500 }}>
+                        Hello, {user.displayName ? user.displayName.split(' ')[0] : 'User'}!
+                      </div>
+                    </Box>
+                  )}
+                      
                   <Grid
                     container
                     spacing={4}
