@@ -68,11 +68,19 @@ function App() {
 
   function PrivateRoute({ children }) {
     if (!user) {
-      setShowAuthAlert(true);
-      return <Navigate to="/login" replace />;
+      return <Navigate to="/login" replace state={{ fromProtected: true }} />;
     }
     return children;
   }
+
+  useEffect(() => {
+    // Show auth alert if redirected from a protected route
+    if (location.state && location.state.fromProtected) {
+      setShowAuthAlert(true);
+      // Clean up the state so it doesn't show again on refresh
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   return (
     <>
