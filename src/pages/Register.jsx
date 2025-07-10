@@ -80,7 +80,7 @@ export default function Register() {
         sx={{
           p: { xs: 2, sm: 4 },
           borderRadius: 3,
-          maxWidth: 400,
+          maxWidth: { xs: '90vw', sm: 400 },
           width: '100%',
           mx: 'auto',
           bgcolor: 'background.paper',

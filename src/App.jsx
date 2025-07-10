@@ -74,10 +74,8 @@ function App() {
   }
 
   useEffect(() => {
-    // Show auth alert if redirected from a protected route
     if (location.state && location.state.fromProtected) {
       setShowAuthAlert(true);
-      // Clean up the state so it doesn't show again on refresh
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location, navigate]);
@@ -107,73 +105,75 @@ function App() {
                 >                  
                   {user && (
                     <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                      <div style={{ marginBottom: 24, fontSize: 22, fontWeight: 500 }}>
+                      <div style={{ marginBottom: 12, fontSize: 22, fontWeight: 500 }}>
                         Hello, {user.displayName ? user.displayName.split(' ')[0] : 'User'}!
                       </div>
                     </Box>
                   )}
                       
-                  <Grid
-                    container
-                    spacing={4}
-                    alignItems="flex-start"
-                    justifyContent="flex-start"
-                    sx={{
-                      flex: 1,
-                      mt: { xs: 1, md: 4 },
-                      mb: { xs: 1, md: 4 },
-                      flexDirection: { xs: 'column', md: 'row' },
-                      width: '100%',
-                      maxWidth: '100vw',
-                      mx: 0,
-                      overflowX: 'hidden',
-                    }}
-                  >
                     <Grid
-                      item
-                      xs={12}
-                      md="auto"
+                      container
+                      spacing={4}
+                      alignItems="flex-start"
+                      justifyContent="flex-start"
                       sx={{
-                        flexBasis: { xs: '100%', md: 400 },
-                        maxWidth: { xs: '100%', md: 400 },
-                        flexGrow: 0,
-                        minWidth: 0,
-                        mb: { xs: 2, md: 0 },
-                        display: 'flex',
-                        flexDirection: 'column',
-                        mr: { xs: 0, md: 4, lg: 4 },
-                        ml: { xs: 0, md: 4, lg: 6 },
+                        flex: 1,
+                        mt: { xs: 1, md: 4 },
+                        mb: { xs: 1, md: 4 },
+                        flexDirection: { xs: 'column', md: 'row' },
+                        width: '100%',
+                        maxWidth: '100vw',
+                        mx: 0,
+                        overflowX: 'hidden',
                       }}
                     >
-                      <UserForm
-                        onSubmit={handleSubmit}
-                        editingUser={editingUser}
-                        showError={(message) => showNotification(message, 'error')}
-                      />
+                      <Grid
+                        item
+                        xs={12}
+                        md="auto"
+                        sx={{
+                          flexBasis: { xs: '100%', md: 400 },
+                          maxWidth: { xs: '100%', md: 400 },
+                          flexGrow: 0,
+                          minWidth: 0,
+                          mb: { xs: 2, md: 0 },
+                          display: 'flex',
+                          flexDirection: 'column',
+                          mr: { xs: 0, md: 4, lg: 4 },
+                          ml: { xs: 0, md: 4, lg: 6 },
+                          px: { xs: 2, md: 0 }, // add horizontal padding on small screens
+                        }}
+                      >
+                        <UserForm
+                          onSubmit={handleSubmit}
+                          editingUser={editingUser}
+                          showError={(message) => showNotification(message, 'error')}
+                        />
+                      </Grid>
+                      <Grid
+                        item
+                        xs={12}
+                        md
+                        sx={{
+                          flexBasis: { xs: '100%', md: 0 },
+                          flexGrow: 100,
+                          maxWidth: { xs: '100%', md: 'calc(100% - 540px)' },
+                          minWidth: 0,
+                          mt: { xs: 2, md: 0 },
+                          pl: { xs: 0, md: 3 },
+                          display: 'flex',
+                          flexDirection: 'column',
+                          overflowX: 'auto',
+                          px: { xs: 2, md: 0 }, // add horizontal padding on small screens
+                        }}
+                      >
+                        <UserTable
+                          users={users}
+                          onEdit={setEditingUser}
+                          onDelete={handleDelete}
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid
-                      item
-                      xs={12}
-                      md
-                      sx={{
-                        flexBasis: { xs: '100%', md: 0 },
-                        flexGrow: 100,
-                        maxWidth: { xs: '100%', md: 'calc(100% - 540px)' },
-                        minWidth: 0,
-                        mt: { xs: 2, md: 0 },
-                        pl: { xs: 0, md: 3 },
-                        display: 'flex',
-                        flexDirection: 'column',
-                        overflowX: 'auto',
-                      }}
-                    >
-                      <UserTable
-                        users={users}
-                        onEdit={setEditingUser}
-                        onDelete={handleDelete}
-                      />
-                    </Grid>
-                  </Grid>
                   <Notification
                     open={notification.open}
                     message={notification.message}

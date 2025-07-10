@@ -52,20 +52,35 @@ export default function Header({ darkMode, toggleDarkMode, user, onLogout }) {
 
   return (
     <AppBar
-      position="static"
+      position="sticky"
       elevation={2}
       sx={{
         bgcolor: 'background.paper',
         borderBottom: '1px solid',
         borderColor: 'divider',
-        px: { xs: 1, sm: 3 },
+        px: { xs: '0.5rem', sm: '1rem', md: '1.5rem' },
+        width: '100%',
+        top: 0,
+        zIndex: (theme) => theme.zIndex.appBar,
+        height: { xs: '3.5rem', sm: '4.5rem', md: '5rem' },
+        minHeight: '3.5rem',
+        display: 'flex',
+        justifyContent: 'center',
       }}
     >
-      <Toolbar>
+      <Toolbar
+        sx={{
+          minHeight: '3.5rem !important',
+          display: 'flex',
+          justifyContent: 'space-between',
+          px: { xs: '0.5rem', sm: '1rem', md: '1.5rem' },
+          width: '100%',
+        }}
+      >
         <PeopleAltRoundedIcon
           sx={{
             color: 'primary.main',
-            fontSize: 32,
+            fontSize: { xs: 24, sm: 28, md: 32 },
             mr: 1,
             verticalAlign: 'middle',
           }}
@@ -78,11 +93,12 @@ export default function Header({ darkMode, toggleDarkMode, user, onLogout }) {
             fontWeight: 'bold',
             color: 'text.primary',
             letterSpacing: 1,
+            fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' },
           }}
         >
           User Management
         </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1, md: 1.5 } }}>
           {showLoginRegister &&
             navItems.map((item) => (
               <Button
@@ -93,11 +109,12 @@ export default function Header({ darkMode, toggleDarkMode, user, onLogout }) {
                 sx={{
                   fontWeight: 600,
                   borderRadius: 2,
-                  px: 2,
+                  px: { xs: 1, sm: 2 },
                   boxShadow: 'none',
                   textTransform: 'none',
                   bgcolor: location.pathname === item.path ? `${item.color}.main` : 'transparent',
                   color: location.pathname === item.path ? `${item.color}.contrastText` : `${item.color}.main`,
+                  fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' },
                   '&:hover': {
                     bgcolor: `${item.color}.dark`,
                     color: `${item.color}.contrastText`,
@@ -117,11 +134,12 @@ export default function Header({ darkMode, toggleDarkMode, user, onLogout }) {
               sx={{
                 fontWeight: 600,
                 borderRadius: 2,
-                px: 2,
+                px: { xs: 1, sm: 2 },
                 boxShadow: 'none',
                 textTransform: 'none',
                 bgcolor: location.pathname === item.path ? `${item.color}.main` : 'transparent',
                 color: location.pathname === item.path ? `${item.color}.contrastText` : `${item.color}.main`,
+                fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' },
                 '&:hover': {
                   bgcolor: `${item.color}.dark`,
                   color: `${item.color}.contrastText`,
@@ -171,12 +189,13 @@ export default function Header({ darkMode, toggleDarkMode, user, onLogout }) {
               startIcon={<LogoutIcon />}
               onClick={onLogout}
               sx={{
-                ml: 2,
+                ml: { xs: 0.5, sm: 2 },
                 fontWeight: 600,
                 borderRadius: 2,
                 textTransform: 'none',
                 borderColor: 'error.main',
                 color: 'error.main',
+                fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' },
                 '&:hover': {
                   bgcolor: 'error.main',
                   color: 'error.contrastText',
@@ -193,8 +212,9 @@ export default function Header({ darkMode, toggleDarkMode, user, onLogout }) {
             sx={{
               color: 'primary.main',
               transition: 'transform 0.2s',
-              ml: 1,
+              ml: { xs: 0.5, sm: 1 },
               '&:hover': { transform: 'scale(1.15)' },
+              fontSize: { xs: '1rem', sm: '1.25rem' },
             }}
             aria-label="Toggle dark mode"
           >

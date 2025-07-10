@@ -115,7 +115,7 @@ export default function Layout({ children, user, onLogout }) {
       <CssBaseline />
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} user={user} onLogout={onLogout} />
-        <main style={{ flex: 1 }}>{children}</main>
+        <main style={{ flex: 1, paddingTop: '5rem', paddingBottom: '3.5rem' }}>{children}</main>
         <Footer />
       </div>
     </ThemeProvider>
