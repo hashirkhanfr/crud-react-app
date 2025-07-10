@@ -3,8 +3,9 @@ import { Button, ButtonGroup } from '@mui/material';
 import DeleteDialog from '../common/DeleteDialog';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-export default function TableActions({ onEdit, onDelete }) {
+export default function TableActions({ onEdit, onDelete, onViewProfile }) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   return (
@@ -24,6 +25,21 @@ export default function TableActions({ onEdit, onDelete }) {
           }}
         >
           Edit
+        </Button>
+        <Button
+          onClick={onViewProfile}
+          startIcon={<AccountCircleIcon sx={{ color: 'primary.main' }} />}
+          sx={{
+            color: 'primary.main',
+            borderColor: 'primary.light',
+            '&:hover': {
+              transform: 'translateY(-2px) scale(1.05)',
+              backgroundColor: 'primary.light',
+              color: 'primary.contrastText'
+            }
+          }}
+        >
+          View Profile
         </Button>
         <Button
           onClick={() => setDeleteDialogOpen(true)}

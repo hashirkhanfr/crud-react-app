@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { Paper, Typography, Box, Grid, Divider, TextField, useTheme } from '@mui/material';
+import { Paper, Typography, Box, Grid, Divider, TextField, useTheme, Button, Avatar } from '@mui/material';
 import SubmitButton from '../common/SubmitButton';
 import PersonAddAlt1RoundedIcon from '@mui/icons-material/PersonAddAlt1Rounded';
 import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
 import { MuiTelInput, matchIsValidTel } from 'mui-tel-input';
+import { storage } from '../../config/firebase';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 export default function UserForm({ onSubmit, editingUser, showError }) {
   const theme = useTheme();
@@ -24,9 +26,27 @@ export default function UserForm({ onSubmit, editingUser, showError }) {
       email: '',
       phone: '',
       location: '',
-      hobby: ''
+      hobby: '',
+      profilePictureUrl: ''
     }
   });
+
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [previewUrl, setPreviewUrl] = useState('');
+
+  React.useEffect(() => {
+    reset(editingUser || {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      location: '',
+      hobby: '',
+      profilePictureUrl: ''
+    });
+    setPreviewUrl(editingUser?.profilePictureUrl || '');
+  }, [editingUser]);
 
   const onSubmitWithValidation = async (data) => {
     const isValid = await trigger();
@@ -37,16 +57,41 @@ export default function UserForm({ onSubmit, editingUser, showError }) {
     onSubmit(data);
   };
 
-  React.useEffect(() => {
-    reset(editingUser || {
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      location: '',
-      hobby: ''
-    });
-  }, [editingUser]);
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Preview image locally
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to Firebase Storage
+    const storageRef = ref(storage, `hashir/${file.name}_${Date.now()}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    setUploading(true);
+    setUploadProgress(0);
+
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setUploadProgress(progress);
+      },
+      (error) => {
+        setUploading(false);
+        showError('Upload failed: ' + error.message);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setUploading(false);
+          setValue('profilePictureUrl', downloadURL, { shouldValidate: true });
+        });
+      }
+    );
+  };
 
   const phoneValue = watch('phone');
 
@@ -231,6 +276,27 @@ export default function UserForm({ onSubmit, editingUser, showError }) {
                 width: '100%'
               }}
             />
+          </Grid>
+          <Grid item xs={12} sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <input
+              accept="image/*"
+              id="profile-picture-upload"
+              type="file"
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+            />
+            <label htmlFor="profile-picture-upload">
+              <Button variant="outlined" component="span" disabled={uploading}>
+                {uploading ? `Uploading... ${Math.round(uploadProgress)}%` : 'Upload Profile Picture'}
+              </Button>
+            </label>
+            {previewUrl && (
+              <Avatar
+                src={previewUrl}
+                alt="Profile Preview"
+                sx={{ width: 80, height: 80, mt: 2, border: `2px solid ${theme.palette.primary.main}` }}
+              />
+            )}
           </Grid>
         </Grid>
         <SubmitButton isEditing={!!editingUser} />

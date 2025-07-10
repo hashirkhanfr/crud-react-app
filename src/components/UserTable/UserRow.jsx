@@ -1,7 +1,7 @@
 import { TableCell, TableRow } from '@mui/material';
 import TableActions from './TableActions';
 
-export default function UserRow({ user, onEdit, onDelete }) {
+export default function UserRow({ user, onEdit, onDelete, onViewProfile }) {
   return (
     <TableRow hover sx={{ 
       transition: 'background-color 0.3s ease',
@@ -17,6 +17,7 @@ export default function UserRow({ user, onEdit, onDelete }) {
         <TableActions 
           onEdit={() => onEdit(user)} 
           onDelete={() => onDelete(user.id)} 
+          onViewProfile={() => onViewProfile(user)}
         />
       </TableCell>
     </TableRow>
