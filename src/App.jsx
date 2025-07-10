@@ -8,6 +8,7 @@ import Notification from './components/common/Notification';
 import { useTheme } from '@mui/material/styles';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './config/firebase';
+import { fetchUsers, addUser, updateUser, deleteUser as deleteUserFromFirestore } from './utils/firestoreUsers';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -35,6 +36,15 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+
+  useEffect(() => {
+    if (user) {
+      fetchUsers().then(setUsers).catch(() => showNotification('Failed to fetch users', 'error'));
+    } else {
+      setUsers([]);
+    }
+  }, [user]);
+
   const showNotification = (message, severity = 'success') => {
     setNotification({ open: true, message, severity });
   };
@@ -43,22 +53,34 @@ function App() {
     setNotification({ ...notification, open: false });
   };
 
-  const handleSubmit = (data) => {
-    if (editingUser) {
-      setUsers(users.map(user => 
-        user.id === editingUser.id ? { ...data, id: editingUser.id } : user
-      ));
-      showNotification('User updated successfully!');
-    } else {
-      setUsers([...users, { ...data, id: Date.now() }]);
-      showNotification('User added successfully!');
+  const handleSubmit = async (data) => {
+    try {
+      console.log('Submitting user data:', data); // Debug log
+      if (editingUser) {
+        const updated = await updateUser({ ...data, id: editingUser.id });
+        setUsers(users.map(user => user.id === editingUser.id ? updated : user));
+        showNotification('User updated successfully!');
+      } else {
+        const added = await addUser(data);
+        setUsers([...users, added]);
+        showNotification('User added successfully!');
+      }
+      setEditingUser(null);
+      console.log('User saved to Firestore'); // Debug log
+    } catch (err) {
+      showNotification('Failed to save user: ' + err.message, 'error');
+      console.error('Firestore write error:', err); // Debug log
     }
-    setEditingUser(null);
   };
 
-  const handleDelete = (id) => {
-    setUsers(users.filter(user => user.id !== id));
-    showNotification('User deleted successfully!');
+  const handleDelete = async (id) => {
+    try {
+      await deleteUserFromFirestore(id);
+      setUsers(users.filter(user => user.id !== id));
+      showNotification('User deleted successfully!');
+    } catch (err) {
+      showNotification('Failed to delete user: ' + err.message, 'error');
+    }
   };
 
   const handleLogout = async () => {
