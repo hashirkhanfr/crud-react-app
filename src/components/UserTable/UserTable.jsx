@@ -1,11 +1,7 @@
 import {Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper,useMediaQuery,useTheme,Typography,Box} from '@mui/material';
 import UserRow from './UserRow';
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded';
-
 import React, { useState } from 'react';
-import {Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper,useMediaQuery,useTheme,Typography,Box} from '@mui/material';
-import UserRow from './UserRow';
-import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded';
 import ProfilePopup from './ProfilePopup';
 
 export default function UserTable({ users, onEdit, onDelete }) {
