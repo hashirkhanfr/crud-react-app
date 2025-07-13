@@ -8,7 +8,7 @@ import Notification from './components/common/Notification';
 import { useTheme } from '@mui/material/styles';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './config/firebase';
-import { fetchUsers, addUser, updateUser, deleteUser as deleteUserFromFirestore } from './utils/firestoreUsers';
+import { fetchUsers, addUser, updateUser, deleteUser as deleteUserFromFirestore, addMail } from './utils/firestoreUsers';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -63,6 +63,13 @@ function App() {
       } else {
         const added = await addUser(data);
         setUsers([...users, added]);
+        // Add mail document to trigger email
+        const mail = {
+          to: added.email,
+          subject: 'Welcome to Our Service',
+          message: `Hello ${added.firstName},\n\nThank you for registering with us! We are excited to have you on board.\n\nBest regards,\nThe Team`
+        };
+        await addMail(mail);
         showNotification('User added successfully!');
       }
       setEditingUser(null);

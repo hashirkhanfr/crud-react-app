@@ -4,6 +4,8 @@ const PROJECT_ID = "internship-2025-465209";
 const DATABASE_ID = "hashir";
 const BASE_URL = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/${DATABASE_ID}/documents`;
 const USERS_COLLECTION = "users";
+const MAILS_COLLECTION = "mails";
+
 
 async function getIdToken() {
   const auth = getAuth();
@@ -130,4 +132,32 @@ export async function deleteUser(userId) {
     const errorText = await response.text();
     throw new Error(`deleteUser error: ${response.status} ${errorText}`);
   }
+}
+
+export async function addMail(mail) {
+  const token = await getIdToken();
+  const url = `${BASE_URL}/${MAILS_COLLECTION}`;
+  const body = JSON.stringify({
+    fields: {
+      to: { stringValue: mail.to },
+      subject: { stringValue: mail.subject },
+      message: { stringValue: mail.message },
+      sentAt: { timestampValue: new Date().toISOString() }
+    }
+  });
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body,
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`addMail error: ${response.status} ${errorText}`);
+  }
+  const data = await response.json();
+  const newId = data.name.split("/").pop();
+  return { id: newId, ...mail };
 }
