@@ -55,7 +55,6 @@ function App() {
 
   const handleSubmit = async (data) => {
     try {
-      console.log('Submitting user data:', data); // Debug log
       if (editingUser) {
         const updated = await updateUser({ ...data, id: editingUser.id });
         setUsers(users.map(user => user.id === editingUser.id ? updated : user));
@@ -63,20 +62,18 @@ function App() {
       } else {
         const added = await addUser(data);
         setUsers([...users, added]);
-        // Add mail document to trigger email
         const mail = {
           to: added.email,
           subject: 'Welcome to Our Service',
-          message: `Hello ${added.firstName},\n\nThank you for registering with us! We are excited to have you on board.\n\nBest regards,\nThe Team`
+          message: `Hello ${added.firstName},\n\nThis is a test email from Hashir Khan :) .\n\nBest regards,\nThe Team`
         };
         await addMail(mail);
         showNotification('User added successfully!');
       }
       setEditingUser(null);
-      console.log('User saved to Firestore'); // Debug log
     } catch (err) {
       showNotification('Failed to save user: ' + err.message, 'error');
-      console.error('Firestore write error:', err); // Debug log
+      console.error('Firestore write error:', err);
     }
   };
 
@@ -170,7 +167,7 @@ function App() {
                           flexDirection: 'column',
                           mr: { xs: 0, md: 4, lg: 4 },
                           ml: { xs: 0, md: 4, lg: 6 },
-                          px: { xs: 2, md: 0 }, // add horizontal padding on small screens
+                          px: { xs: 2, md: 0 },
                         }}
                       >
                         <UserForm
@@ -193,7 +190,7 @@ function App() {
                           display: 'flex',
                           flexDirection: 'column',
                           overflowX: 'auto',
-                          px: { xs: 2, md: 0 }, // add horizontal padding on small screens
+                          px: { xs: 2, md: 0 },
                         }}
                       >
                         <UserTable
