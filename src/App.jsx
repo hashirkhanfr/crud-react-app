@@ -65,7 +65,12 @@ function App() {
         const mail = {
           to: added.email,
           subject: 'Welcome to Our Service',
-          message: `Hello ${added.firstName},\n\nThis is a test email from Hashir Khan :) .\n\nBest regards,\nThe Team`
+          message: {
+            text: `Hello ${added.firstName},\n\nThis is a test email from Hashir Khan :).\n\nBest regards,\nThe Team`,
+            html: `<p>Hello ${added.firstName},</p>
+                  <p>This is a test email from Hashir Khan :).</p>
+                  <p>Best regards,<br/>The Team</p>`
+          }
         };
         await addMail(mail);
         showNotification('User added successfully!');

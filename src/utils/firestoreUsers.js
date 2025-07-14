@@ -141,10 +141,18 @@ export async function addMail(mail) {
     fields: {
       to: { stringValue: mail.to },
       subject: { stringValue: mail.subject },
-      message: { stringValue: mail.message },
+      message: {
+        mapValue: {
+          fields: {
+            text: { stringValue: mail.message.text },
+            html: { stringValue: mail.message.html || "" }
+          }
+        }
+      },
       sentAt: { timestampValue: new Date().toISOString() }
     }
   });
+  
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -153,10 +161,12 @@ export async function addMail(mail) {
     },
     body,
   });
+  
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(`addMail error: ${response.status} ${errorText}`);
   }
+  
   const data = await response.json();
   const newId = data.name.split("/").pop();
   return { id: newId, ...mail };
